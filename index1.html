@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelQuest Pro — Исследуй неизведанное</title>
+    <!-- Шрифты и иконки -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- ПЕРЕМЕННЫЕ И ОБНУЛЕНИЕ --- */
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --light-accent: #f39c12;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --text-main: #34495e;
+            --text-muted: #7f8c8d;
+            --radius-lg: 30px;
+            --radius-sm: 12px;
+            --shadow: 0 15px 35px rgba(0,0,0,0.1);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-light);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .logo {
+            font-family: 'Playfair Display', serif;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* --- СКРОЛЛБАР --- */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 5px; }
+
+        /* --- НАВИГАЦИЯ --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        nav.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+            transition: var(--transition);
+        }
+
+        nav.scrolled .logo { color: var(--accent); }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-link {
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        nav.scrolled .nav-link { color: var(--primary); }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: 0.3s;
+        }
+
+        .nav-link:hover::after { width: 100%; }
+
+        /* --- ГЕРОЙ-БЛОК --- */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards 0.5s;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0;
+            animation: fadeInUp 1s forwards 0.8s;
+        }
+
+        /* --- ОБЩИЕ СЕКЦИИ --- */
+        section {
+            padding: 120px 10%;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header span {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-top: 10px;
+            color: var(--primary);
+        }
+
+        /* --- КАРТОЧКИ ТУРОВ --- */
+        .tour-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .tour-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tour-card:hover {
+            transform: translateY(-15px);
+        }
+
+        .tour-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+
+        .tour-img {
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .tour-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .tour-card:hover .tour-img img {
+            transform: scale(1.1);
+        }
+
+        .tour-info {
+            padding: 30px;
+        }
+
+        .tour-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* --- СТАТИСТИКА --- */
+        .stats {
+            background: var(--primary);
+            color: white;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            text-align: center;
+            gap: 40px;
+        }
+
+        .stat-item h3 { font-size: 3rem; color: var(--accent); }
+
+        /* --- ЦЕНЫ / ТАРИФЫ --- */
+        .pricing-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .price-card {
+            background: white;
+            padding: 50px 40px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            width: 350px;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .price-card.popular {
+            border-color: var(--accent);
+            transform: scale(1.05);
+            background: #fffdfa;
+        }
+
+        .price-card ul {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .price-card li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price-card i { color: #2ecc71; }
+
+        /* --- АККОРДЕОН (FAQ) --- */
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 15px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .faq-question {
+            padding: 20px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .faq-answer {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 20px 30px;
+            max-height: 200px;
+        }
+
+        /* --- ОТЗЫВЫ --- */
+        .testimonials {
+            background: #f0f2f5;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: "\f10d";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 3rem;
+            color: rgba(0,0,0,0.05);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .user-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* --- ФУТЕР --- */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 80px 10% 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-col h4 {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
+
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a:hover { color: var(--accent); padding-left: 5px; transition: 0.3s; }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover { background: var(--accent); }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* --- КНОПКИ --- */
+        .btn-main {
+            display: inline-block;
+            padding: 18px 40px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-main:hover {
+            background: var(--light-accent);
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.3);
+        }
+
+        /* --- АНИМАЦИИ --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: 1s all ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- МОБИЛЬНАЯ ГИБКОСТЬ --- */
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            section { padding: 80px 5%; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .price-card.popular { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация -->
+    <nav id="navbar">
+        <a href="#" class="logo">TravelQuest.</a>
+        <ul class="nav-menu">
+            <li><a href="#home" class="nav-link">Главная</a></li>
+            <li><a href="#tours" class="nav-link">Туры</a></li>
+            <li><a href="#pricing" class="nav-link">Цены</a></li>
+            <li><a href="#faq" class="nav-link">Вопросы</a></li>
+            <li><a href="#contact" class="nav-link">Контакты</a></li>
+        </ul>
+        <button class="btn-main" style="padding: 10px 25px;">Book Now</button>
+    </nav>
+
+    <!-- Главный экран -->
+    <header class="hero" id="home">
+        <div class="hero-content">
+            <span>Ваше следующее приключение ждет</span>
+            <h1>Мир Больше, Чем <br>Вы Думаете</h1>
+            <p>Мы создаем авторские экспедиции в самые труднодоступные и красивые уголки планеты с комфортом премиум-класса.</p>
+            <a href="#tours" class="btn-main">Найти свой маршрут</a>
+        </div>
+    </header>
+
+    <!-- Популярные туры -->
+    <section id="tours">
+        <div class="section-header reveal">
+            <span>Направления 2026</span>
+            <h2>Популярные Маршруты</h2>
+        </div>
+
+        <div class="tour-grid">
+            <!-- Карточка 1 -->
+            <div class="tour-card reveal">
+                <div class="tour-badge">New</div>
+                <div class="tour-img">
+                    <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80" alt="Ocean">
+                </div>
+                <div class="tour-info">
+                    <div class="tour-meta">
+                        <span><i class="fa-regular fa-clock"></i> 12 Дней</span>
+                        <span><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 4.9</span>
+                    </div>
+                    <h3>Тайны Балийских Островов</h3>
+                    <p style="margin: 15px 0; color: var(--text-muted);">Погружение в культуру, йога-ретриты и дикие пляжи Нуса-Пениды.</p>
+                    <div class="price">от $1,200</div>
+                </div>
+            </div>
+
+            <!-- Карточка 2 -->
+            <div class="tour-card reveal">
+                <div class="tour-img">
+                    <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80" alt="Mountains">
+                </div>
+                <div class="tour-info">
+                    <div class="tour-meta">
+                        <span><i class="fa-regular fa-clock"></i> 8 Дней</span>
+                        <span><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 5.0</span>
+                    </div>
+                    <h3>Пики Швейцарских Альп</h3>
+                    <p style="margin: 15px 0; color: var(--text-muted);">Горнолыжные курорты и уютные шале с видом на Маттерхорн.</p>
+                    <div class="price">от $2,450</div>
+                </div>
+            </div>
+
+            <!-- Карточка 3 -->
+            <div class="tour-card reveal">
+                <div class="tour-img">
+                    <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=600&q=80" alt="Venice">
+                </div>
+                <div class="tour-info">
+                    <div class="tour-meta">
+                        <span><i class="fa-regular fa-clock"></i> 10 Дней</span>
+                        <span><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 4.8</span>
+                    </div>
+                    <h3>Романтика Венеции</h3>
+                    <p style="margin: 15px 0; color: var(--text-muted);">Прогулки на гондолах и закрытые ужины в старинных палаццо.</p>
+                    <div class="price">от $1,800</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Счётчики -->
+    <section class="stats">
+        <div class="stat-item">
+            <h3>15к+</h3>
+            <p>Клиентов</p>
+        </div>
+        <div class="stat-item">
+            <h3>250+</h3>
+            <p>Отелей</p>
+        </div>
+        <div class="stat-item">
+            <h3>12</h3>
+            <p>Лет опыта</p>
+        </div>
+        <div class="stat-item">
+            <h3>45</h3>
+            <p>Стран</p>
+        </div>
+    </section>
+
+    <!-- Секция цен -->
+    <section id="pricing">
+        <div class="section-header reveal">
+            <span>Гибкость</span>
+            <h2>Выберите Свой Формат</h2>
+        </div>
+
+        <div class="pricing-table">
+            <div class="price-card reveal">
+                <h3>Базовый</h3>
+                <div class="price" style="font-size: 3rem; margin: 20px 0;">$499</div>
+                <p>Для самостоятельных</p>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Перелет и проживание</li>
+                    <li><i class="fa-solid fa-check"></i> Базовая страховка</li>
+                    <li><i class="fa-solid fa-xmark" style="color: #e74c3c;"></i> Личный гид</li>
+                    <li><i class="fa-solid fa-xmark" style="color: #e74c3c;"></i> Питание включено</li>
+                </ul>
+                <a href="#" class="btn-main" style="background: var(--primary);">Выбрать</a>
+            </div>
+
+            <div class="price-card popular reveal">
+                <h3>Комфорт</h3>
+                <div class="price" style="font-size: 3rem; margin: 20px 0;">$1,299</div>
+                <p>Самый популярный</p>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Все из Базового</li>
+                    <li><i class="fa-solid fa-check"></i> Групповые экскурсии</li>
+                    <li><i class="fa-solid fa-check"></i> Завтраки и ужины</li>
+                    <li><i class="fa-solid fa-check"></i> Трансфер из аэропорта</li>
+                </ul>
+                <a href="#" class="btn-main">Выбрать</a>
+            </div>
+
+            <div class="price-card reveal">
+                <h3>Elite VIP</h3>
+                <div class="price" style="font-size: 3rem; margin: 20px 0;">$3,500</div>
+                <p>Все включено</p>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Индивидуальный гид</li>
+                    <li><i class="fa-solid fa-check"></i> Бизнес-класс перелет</li>
+                    <li><i class="fa-solid fa-check"></i> Лучшие рестораны</li>
+                    <li><i class="fa-solid fa-check"></i> Консьерж 24/7</li>
+                </ul>
+                <a href="#" class="btn-main" style="background: var(--primary);">Выбрать</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+        <div class="section-header reveal">
+            <span>FAQ</span>
+            <h2>Частые Вопросы</h2>
+        </div>
+        <div class="faq-container reveal">
+            <div class="faq-item">
+                <div class="faq-question">Какие документы нужны для поездки? <i class="fa-solid fa-plus"></i></div>
+                <div class="faq-answer">
+                    <p>Для большинства наших туров достаточно загранпаспорта со сроком действия не менее 6 месяцев. Мы помогаем с оформлением виз для всех направлений.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Входит ли страховка в стоимость? <i class="fa-solid fa-plus"></i></div>
+                <div class="faq-answer">
+                    <p>Да, во все пакеты включена медицинская страховка с покрытием до $50,000, включая случаи COVID-19.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Можно ли отменить бронирование? <i class="fa-solid fa-plus"></i></div>
+                <div class="faq-answer">
+                    <p>Бесплатная отмена возможна за 30 дней до вылета. При более поздней отмене удерживается комиссия согласно договору.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contact" style="background: white;">
+        <div class="section-header reveal">
+            <span>Связь</span>
+            <h2>Готовы Обсудить?</h2>
+        </div>
+        <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px;">
+            <div class="reveal">
+                <h3>Наши контакты</h3>
+                <p style="margin: 20px 0;">Заходите в гости на чашку кофе или звоните в любое время.</p>
+                <p><i class="fa-solid fa-location-dot color-accent"></i> Москва, ул. Пушкина 10</p>
+                <p><i class="fa-solid fa-phone color-accent" style="margin: 15px 0; display: block;"></i> +7 (999) 000-11-22</p>
+                <p><i class="fa-solid fa-envelope color-accent"></i> hello@travelquest.com</p>
+            </div>
+            <form class="reveal" style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="text" placeholder="Имя" style="padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
+                <input type="email" placeholder="Email" style="padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
+                <textarea placeholder="Ваше сообщение" rows="5" style="padding: 15px; border-radius: 10px; border: 1px solid #ddd;"></textarea>
+                <button type="submit" class="btn-main">Отправить</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo" style="color: white; margin-bottom: 20px;">TravelQuest.</div>
+                <p>Мы меняем представление о путешествиях. Каждая поездка — это новая глава вашей жизни.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Навигация</h4>
+                <ul class="footer-links">
+                    <li><a href="#home">Главная</a></li>
+                    <li><a href="#tours">Туры</a></li>
+                    <li><a href="#pricing">Цены</a></li>
+                    <li><a href="#faq">Помощь</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Подписка</h4>
+                <p>Получайте секретные предложения раз в неделю.</p>
+                <div style="margin-top: 20px; display: flex;">
+                    <input type="text" placeholder="Email" style="padding: 10px; border-radius: 5px 0 0 5px; border: none; width: 100%;">
+                    <button style="background: var(--accent); border: none; padding: 10px; border-radius: 0 5px 5px 0; cursor: pointer; color: white;">OK</button>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 TravelQuest Premium. Все права защищены. Дизайн: AI Creative.
+        </div>
+    </footer>
+
+    <!-- Скрипты -->
+    <script>
+        // 1. Изменение шапки при скролле
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // 2. Анимация появления элементов (Reveal)
+        const revealElements = () => {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const revealTop = el.getBoundingClientRect().top;
+                const revealPoint = 150;
+                if (revealTop < windowHeight - revealPoint) {
+                    el.classList.add('active');
+                }
+            });
+        };
+        window.addEventListener('scroll', revealElements);
+        window.addEventListener('load', revealElements);
+
+        // 3. Аккордеон FAQ
+        document.querySelectorAll('.faq-question').forEach(item => {
+            item.addEventListener('click', () => {
+                const parent = item.parentElement;
+                parent.classList.toggle('active');
+                
+                // Закрыть другие, если нужно
+                document.querySelectorAll('.faq-item').forEach(child => {
+                    if (child !== parent) child.classList.remove('active');
+                });
+
+                // Смена иконки
+                const icon = item.querySelector('i');
+                if (parent.classList.contains('active')) {
+                    icon.classList.replace('fa-plus', 'fa-minus');
+                } else {
+                    icon.classList.replace('fa-minus', 'fa-plus');
+                }
+            });
+        });
+
+        // 4. Плавный скролл для ссылок
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
